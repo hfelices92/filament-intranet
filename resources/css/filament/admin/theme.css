@@ -1,5 +1,9 @@
-/* Aumentar padding de la topbar */
+/* Cambiar color del sidebar */
+.fi-sidebar {
+    background-color: #fafafa;
+}
+
+/* Padding superior de la topbar */
 .fi-topbar {
     padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
 }

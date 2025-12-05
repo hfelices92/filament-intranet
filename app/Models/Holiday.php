@@ -9,6 +9,12 @@ class Holiday extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'calendar_id',
+        'user_id',
+        'day',
+        'type',
+    ];
     public function calendar()
     {
         return $this->belongsTo(Calendar::class);
