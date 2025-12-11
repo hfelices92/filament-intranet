@@ -9,6 +9,8 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
 
 class TimesheetsTable
 {
@@ -53,6 +55,7 @@ class TimesheetsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ExportBulkAction::make(),
                 ]),
             ]);
     }

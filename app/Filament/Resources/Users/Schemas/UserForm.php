@@ -48,7 +48,7 @@ class UserForm
                     ->schema([
                         Select::make('country_id')
                             //  ->relationship(name: 'country', titleAttribute: 'name') 
-                            ->relationship('country', 'name')
+                            ->options(\App\Models\Country::pluck('name', 'id'))
                             ->searchable()
                             ->preload()
                             ->live()
@@ -88,6 +88,11 @@ class UserForm
                         TextInput::make('postal_code')
                             ->label('Postal Code')
                             ->required(),
+                        Select::make('roles')
+                            ->relationship('roles', 'name')
+                            ->required()
+                            ->multiple()
+                            ->preload(),
                     ])
 
             ])->columns(1);

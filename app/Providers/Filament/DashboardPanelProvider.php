@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -22,6 +24,13 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class DashboardPanelProvider extends PanelProvider
 {
+    public function isAdmin(): bool
+    {
+        /** @var \App\Models\User|null $user */
+        $user = filament()->auth()->user();
+
+        return $user &&  $user->hasRole('super_admin');
+    }
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -43,7 +52,7 @@ class DashboardPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
-                
+
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -58,6 +67,25 @@ class DashboardPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])->plugins([
+                FilamentShieldPlugin::make()->registerNavigation(
+                    function () {
+                        /** @var \App\Models\User|null $user */
+                        $user = filament()->auth()->user();
+
+                        return $user?->hasRole('super_admin');
+                    }
+                ),
+            ])->userMenuItems([
+                 
+                   Action::make('navigate-to-admin-panel')
+                    ->label('Volver al Panel Personal')
+                    ->url('/personal')
+                    ->icon('heroicon-o-arrow-left')
+                    ->visible(fn (): bool => $this->isAdmin())
+                  ,
+                
+            ])
+        ;
     }
 }

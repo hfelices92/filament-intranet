@@ -8,9 +8,16 @@
     "require": {
         "php": "^8.2",
         "altwaireb/laravel-world": "^1.1",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "bezhansalleh/filament-panel-switch": "^2.0",
+        "bezhansalleh/filament-shield": "^4.0",
+        "eightynine/filament-excel-import": "^4.0",
         "filament/filament": "^4.0",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/octane": "^2.13",
+        "laravel/tinker": "^2.10.1",
+        "pxlrbt/filament-excel": "^3.3",
+        "pxlrbt/filament-spotlight": "^2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

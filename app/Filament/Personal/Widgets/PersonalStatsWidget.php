@@ -26,7 +26,10 @@ class PersonalStatsWidget extends StatsOverviewWidget
             Stat::make('Pending Holidays', Holiday::where('user_id', Auth::user()->id)->where('type', 'pending')->count()),
             Stat::make('Approved Holidays', Holiday::where('user_id', Auth::user()->id)->where('type', 'accepted')->count()),
             Stat::make('Rejected Holidays', Holiday::where('user_id', Auth::user()->id)->where('type', 'declined')->count()),
-            Stat::make('Total Work', $this->getTotalWork()),
+            // Stat::make('Total Work', $this->getTotalTime('work')),
+            // Stat::make('Total Pause', $this->getTotalTime('pause')),
+            Stat::make('Today Work', $this->getTodayTime('work')),
+            Stat::make('Today Pause', $this->getTodayTime('pause')),
         ];
     }
 
@@ -42,10 +45,10 @@ class PersonalStatsWidget extends StatsOverviewWidget
 
 
 
-    protected function getTotalWork()
+    protected function getTotalTime(string $type): string
     {
         $timesheets = Timesheet::where('user_id', Auth::user()->id)
-            ->where('type', 'work') // 👈 IMPORTANTE
+            ->where('type', $type) // 👈 IMPORTANTE
             ->whereNotNull('day_out')
             ->get();
 
@@ -56,7 +59,7 @@ class PersonalStatsWidget extends StatsOverviewWidget
             $dayOut = Carbon::parse($timesheet->day_out);
 
             if ($dayOut->lt($dayIn)) {
-                // Esto no debería pasar → invertirlos o saltar
+                // Esto no debería pasar → saltamos
                 continue;
             }
 
@@ -64,8 +67,38 @@ class PersonalStatsWidget extends StatsOverviewWidget
         }
 
         $hours = intdiv($totalSeconds, 3600);
-        $minutes = intdiv($totalSeconds % 3600, 60);
+        $minutes = intdiv(($totalSeconds % 3600), 60);
+        $seconds = $totalSeconds % 60;
 
-        return sprintf('%02d:%02d', $hours, $minutes);
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    }
+
+    protected function getTodayTime(string $type): string
+    {
+        $timesheets = Timesheet::where('user_id', Auth::user()->id)
+            ->where('type', $type) // 👈 IMPORTANTE
+            ->whereDate('day_in', Carbon::today())
+            ->whereNotNull('day_out')
+            ->get();
+
+        $totalSeconds = 0;
+
+        foreach ($timesheets as $timesheet) {
+            $dayIn = Carbon::parse($timesheet->day_in);
+            $dayOut = Carbon::parse($timesheet->day_out);
+
+            if ($dayOut->lt($dayIn)) {
+                // Esto no debería pasar → saltamos
+                continue;
+            }
+
+            $totalSeconds += $dayOut->diffInSeconds($dayIn, true);
+        }
+
+        $hours = intdiv($totalSeconds, 3600);
+        $minutes = intdiv(($totalSeconds % 3600), 60);
+        $seconds = $totalSeconds % 60;
+
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 }

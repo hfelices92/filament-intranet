@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,12 +29,41 @@ class HolidayResource extends Resource
     {
         return parent::getEloquentQuery()->where('user_id', Auth::user()->id);
     }
+    public static function getNavigationBadge(): ?string
+    {
+        $badge = Holiday::where('user_id', Auth::user()->id)->where('type', 'pending')->count();
+        return $badge > 0 ? (string)$badge : null;
+    }
 
+     public static function getNavigationBadgeColor(): string|array|null
+     {
+        return 'danger';
+     }
+public static function getNavigationBadgeTooltip(): string|Htmlable|null
+{
+    return 'Solicitudes pendientes de aprobación';
+}
+
+     public static function getModelLabel(): string
+    {
+        return 'Día Libre';
+    }
+   
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Mis Días Libres';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Días Libres';
+    }
     public static function form(Schema $schema): Schema
     {
         return HolidayForm::configure($schema);
     }
-
+ 
     public static function table(Table $table): Table
     {
         return HolidaysTable::configure($table);

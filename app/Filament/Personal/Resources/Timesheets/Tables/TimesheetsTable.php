@@ -9,13 +9,16 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use pxlrbt\FilamentExcel\Actions\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class TimesheetsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-             ->columns([
+            ->columns([
                 TextColumn::make('calendar.name')
                     ->sortable(),
                 TextColumn::make('user.name')
@@ -53,6 +56,18 @@ class TimesheetsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ExportBulkAction::make()->exports([
+                        ExcelExport::make()
+                            ->withColumns([
+                                Column::make('calendar.name'),
+                                Column::make('user.name'),
+                                Column::make('type'),
+                                Column::make('day_in'),
+                                Column::make('day_out'),
+                                Column::make('created_at'),
+                                Column::make('updated_at'),
+                            ]),
+                    ]),
                 ]),
             ]);
     }
